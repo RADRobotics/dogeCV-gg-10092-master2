@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -45,8 +48,14 @@ public class CompetitionRobotTeleOp extends OpMode {
     private boolean armPIDActive = false;
     double theta;
 
+    public SoundPool mySound;
+    public int beepID;
+    int streamID;
+    boolean play = false;
     @Override
     public void init() {
+        mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
+        beepID = mySound.load(hardwareMap.appContext, R.raw.mario,1);
 
         leftWheelFront = hardwareMap.dcMotor.get("leftWheel");
         leftWheelBack = hardwareMap.dcMotor.get("leftWheel2");
@@ -89,6 +98,17 @@ public class CompetitionRobotTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        if((gamepad1.right_trigger>.1 || gamepad2.right_trigger>.1) && play==false){
+           streamID= mySound.play(beepID,1,1,1,-1,1);
+            play = true;
+        }
+        else if(gamepad1.right_trigger>.1 || gamepad2.right_trigger>.1){
+
+        }
+        else{
+            play = false;
+            mySound.stop(streamID);
+        }
         nitro1 = 1 - (gamepad1.right_trigger * .4);
         nitro2 = 1 + (gamepad2.right_trigger);
         nitro3 = 1 - (gamepad2.left_trigger * .8);
