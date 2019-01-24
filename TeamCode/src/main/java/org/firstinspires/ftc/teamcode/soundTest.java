@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -39,6 +40,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -59,16 +71,30 @@ import com.qualcomm.robotcore.util.Range;
 public class soundTest extends OpMode
 {
     // Declare OpMode members.
+
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private ElapsedTime runtime2 = new ElapsedTime();
+    private DcMotor rw = null;
+    private DcMotor lw = null;
     public SoundPool mySound;
     public int beepID;
+    ArrayList<String> list = new ArrayList<String>();
+    String thing = "";
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
+
+        rw = hardwareMap.dcMotor.get("rightWheel");
+        lw = hardwareMap.dcMotor.get("leftWheel");
+
+        rw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
         beepID = mySound.load(hardwareMap.appContext, R.raw.boop,1);
 
@@ -99,10 +125,14 @@ public class soundTest extends OpMode
     /*
      * Code to run ONCE when the driver hits PLAY
      */
-    @Override
+
     public void start() {
 
+
+
             mySound.play(beepID,1,1,1,0,1);
+            runtime.reset();
+            runtime2.reset();
     }
 
     /*
@@ -110,35 +140,19 @@ public class soundTest extends OpMode
      */
     @Override
     public void loop() {
+        if(runtime.seconds()>.05){
+            //list.add(runtime2.seconds() + " " + rw.getCurrentPosition() + " " + lw.getCurrentPosition());
+            thing += "s:"+runtime2.seconds() + " r:" + rw.getCurrentPosition() + " l:" + lw.getCurrentPosition() + "; ";
+            telemetry.addData("sent", "");
+            runtime.reset();
+        }
+
         if(gamepad1.a){
             mySound.play(beepID,1,1,1,0,1);
         }
         // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
-
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
-
-        // POV Mode uses left stick to go forward, and right stick to turn.
-        // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = -gamepad1.left_stick_y;
-        double turn  =  gamepad1.right_stick_x;
-        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-        // leftPower  = -gamepad1.left_stick_y ;
-        // rightPower = -gamepad1.right_stick_y ;
-
-        // Send calculated power to wheels
-       // leftDrive.setPower(leftPower);
-        //rightDrive.setPower(rightPower);
-
-        // Show the elapsed game time and wheel power.
+        telemetry.addData("encoders", rw.getCurrentPosition() +" " + lw.getCurrentPosition());
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
     }
 
     /*
@@ -146,6 +160,10 @@ public class soundTest extends OpMode
      */
     @Override
     public void stop() {
+        String filename = "data.csv";
+        File file = AppUtil.getInstance().getSettingsFile(filename);
+        ReadWriteFile.writeFile(file, thing);
+        telemetry.log().add("saved to '%s'", filename);
     }
 
 }

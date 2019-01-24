@@ -138,8 +138,8 @@ telemetry.addData("armExtend2",armExtendRight.getCurrentPosition());
 
 
             if (step == 0) {
-                leftLock.setPosition(.5);
-                rightLock.setPosition(.3);
+                leftLock.setPosition(.25);
+                rightLock.setPosition(.4);
                 if(leftArm.getCurrentPosition()>-4250) {
                     //leftArm.setPower(.3);
                     rightArm.setPower(-.3);
