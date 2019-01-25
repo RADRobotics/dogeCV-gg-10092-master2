@@ -51,6 +51,7 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
     double stage = -4;
 
     boolean aligned = false;
+    int arm = 0;
 
     public void runOpMode() throws InterruptedException {
         rightLock = hardwareMap.servo.get("rightLock");
@@ -67,7 +68,7 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
         rightWheel1.setDirection(DcMotorSimple.Direction.REVERSE);
         rightWheel2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        step = 0;
+        step = -1;
 
         telemetry.addData("Status", "DogeCV 2018.0 - Gold Detector test");
         // Setup detector
@@ -109,7 +110,7 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
 
         //Sends color sensor input values to the phone
         waitForStart();
-
+runtime.reset();
         leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightWheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -132,20 +133,33 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
                     .addData("rightWheel1: ", leftWheel1.getCurrentPosition())
                     .addData("rightWheel1: ", rightWheel1.getCurrentPosition());
                     //.addData("TICKS_PER_WHEEL_ROTATION: ", TICKS_PER_WHEEL_ROTATION);
-telemetry.addData("arm::::::",leftArm.getCurrentPosition());
+telemetry.addData("arm::::::",arm);
 telemetry.addData("armExtend",armExtendLeft.getCurrentPosition());
 telemetry.addData("armExtend2",armExtendRight.getCurrentPosition());
 
+arm = leftArm.getCurrentPosition()-1084;//695
+            if(step==-1){
+                leftLock.setPosition(0.37);
+                rightLock.setPosition(.32);
 
+                    rightArm.setPower(.5);
+                    leftArm.setPower(-.5);
+
+                if(runtime.seconds()>2){
+                    step=0;
+                    runtime.reset();
+                }
+            }
             if (step == 0) {
-                leftLock.setPosition(.25);
-                rightLock.setPosition(.4);
-                if(leftArm.getCurrentPosition()>-4250) {
+                leftLock.setPosition(0.37);
+                rightLock.setPosition(.32);
+
+                if(arm>-4250) {
                     //leftArm.setPower(.3);
                     rightArm.setPower(-.3);
 
                 }
-                else if (leftArm.getCurrentPosition()>-5000){
+                else if (arm>-5000){
                     //leftArm.setPower(.65);
                     rightArm.setPower(-.65);
                     if(rightWheel1.getCurrentPosition()>-400) {

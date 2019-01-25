@@ -79,6 +79,8 @@ public class soundTest extends OpMode
     public SoundPool mySound;
     public int beepID;
     ArrayList<String> list = new ArrayList<String>();
+    String marks[][]={{"hi","bu"},{"bap","boop"}};
+
     String thing = "";
     /*
      * Code to run ONCE when the driver hits INIT
@@ -127,9 +129,6 @@ public class soundTest extends OpMode
      */
 
     public void start() {
-
-
-
             mySound.play(beepID,1,1,1,0,1);
             runtime.reset();
             runtime2.reset();
@@ -140,19 +139,20 @@ public class soundTest extends OpMode
      */
     @Override
     public void loop() {
-        if(runtime.seconds()>.05){
+        if(runtime.seconds()>.025){
             //list.add(runtime2.seconds() + " " + rw.getCurrentPosition() + " " + lw.getCurrentPosition());
-            thing += "s:"+runtime2.seconds() + " r:" + rw.getCurrentPosition() + " l:" + lw.getCurrentPosition() + "; ";
+            //thing += "s:"+runtime2.seconds() + " r:" + rw.getCurrentPosition() + " l:" + lw.getCurrentPosition() + "; ";
+            thing += "{"+rw.getCurrentPosition()+","+lw.getCurrentPosition()+"},";
             telemetry.addData("sent", "");
             runtime.reset();
         }
 
-        if(gamepad1.a){
-            mySound.play(beepID,1,1,1,0,1);
-        }
-        // Setup a variable for each drive wheel to save power level for telemetry
-        telemetry.addData("encoders", rw.getCurrentPosition() +" " + lw.getCurrentPosition());
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+//        if(gamepad1.a){
+//            mySound.play(beepID,1,1,1,0,1);
+//        }
+//        // Setup a variable for each drive wheel to save power level for telemetry
+//        telemetry.addData("encoders", rw.getCurrentPosition() +" " + lw.getCurrentPosition());
+//        telemetry.addData("Status", "Run Time: " + runtime.toString());
     }
 
     /*

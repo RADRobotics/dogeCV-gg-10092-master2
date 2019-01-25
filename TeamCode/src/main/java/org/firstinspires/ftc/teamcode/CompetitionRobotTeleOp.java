@@ -168,8 +168,10 @@ public class CompetitionRobotTeleOp extends OpMode {
                 rightArm.setPower(0);
                 leftArm.setPower(0);
             }
-            leftLock.setPosition(0.35);
-            rightLock.setPosition(.3);
+
+            leftLock.setPosition(.25);
+            rightLock.setPosition(.4);
+
 
         } else if (!armPIDActive) {
             if (Math.abs(gamepad2.left_stick_y) > .02 || gamepad2.y) {
@@ -185,8 +187,9 @@ public class CompetitionRobotTeleOp extends OpMode {
                 rightArm.setPower(-Math.cos(theta) * .08);
 
             }
-            leftLock.setPosition(.25);
-            rightLock.setPosition(.4);
+            leftLock.setPosition(0.37);
+            rightLock.setPosition(.32);
+
         }
 
 
