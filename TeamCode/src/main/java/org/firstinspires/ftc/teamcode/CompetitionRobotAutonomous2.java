@@ -43,14 +43,15 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
 
     private enum state {TURN_TO_WALL, MOVE_TO_WALL, MOVE_AWAY_FROM_WALL, TURN_TO_DEPOT, MOVE_TO_DEPOT}
 
-    double alignSize=70;
-    double alignX    = 270;//  (640 / 2) +0; // Center point in X Pixels
+    double alignSize=40;
+    double alignX    = 380;//  (640 / 2) +0; // Center point in X Pixels
     double alignXMin = alignX - (alignSize / 2); // Min X Pos in pixels
     double alignXMax = alignX +(alignSize / 2); // Max X pos in pixels
     double scale = (640)/2;//-alignSize
     double stage = -4;
 
     boolean aligned = false;
+    boolean targeted = false;
     int arm = 0;
 
     public void runOpMode() throws InterruptedException {
@@ -65,6 +66,8 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
         rightArm = hardwareMap.dcMotor.get("rightArm");
         armExtendRight = hardwareMap.dcMotor.get("armExtend");
         armExtendLeft = hardwareMap.dcMotor.get("armExtend2");
+        armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtendLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightWheel1.setDirection(DcMotorSimple.Direction.REVERSE);
         rightWheel2.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -105,6 +108,7 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
         //prepares robot for arm movement by setting arm motors to go to a certain position-modifiable by user input (the d-pad)
 //        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //HSV value array
 
@@ -112,7 +116,7 @@ public class CompetitionRobotAutonomous2 extends LinearOpMode {
         waitForStart();
 runtime.reset();
         leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightWheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightWheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftWheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -137,7 +141,7 @@ telemetry.addData("arm::::::",arm);
 telemetry.addData("armExtend",armExtendLeft.getCurrentPosition());
 telemetry.addData("armExtend2",armExtendRight.getCurrentPosition());
 
-arm = leftArm.getCurrentPosition()-1084;//695
+arm = leftArm.getCurrentPosition()-1600;//695
             if(step==-1){
                 leftLock.setPosition(0.37);
                 rightLock.setPosition(.32);
@@ -145,7 +149,7 @@ arm = leftArm.getCurrentPosition()-1084;//695
                     rightArm.setPower(.5);
                     leftArm.setPower(-.5);
 
-                if(runtime.seconds()>2){
+                if(runtime.seconds()>2 || arm >-1300){
                     step=0;
                     runtime.reset();
                 }
@@ -156,13 +160,19 @@ arm = leftArm.getCurrentPosition()-1084;//695
 
                 if(arm>-4250) {
                     //leftArm.setPower(.3);
-                    rightArm.setPower(-.3);
+
+                    rightArm.setPower(-.15);
+                    leftArm.setPower(.15);
 
                 }
-                else if (arm>-5000){
+                else if (arm>-4900){
                     //leftArm.setPower(.65);
-                    rightArm.setPower(-.65);
-                    if(rightWheel1.getCurrentPosition()>-400) {
+
+                    rightArm.setPower(-.3);
+                    leftArm.setPower(.3);
+
+                    //rightArm.setPower(-.65);
+                    if(rightWheel1.getCurrentPosition()>-200) {
                         leftWheel2.setPower(-.4);
                         leftWheel1.setPower(-.4);
                         rightWheel2.setPower(-.4);
@@ -189,8 +199,12 @@ arm = leftArm.getCurrentPosition()-1084;//695
             }
             if(step==1){
                 //leftArm.setPower(-.55);
-                 rightArm.setPower(.55);
-                if(runtime.seconds()>2.5){
+                 //rightArm.setPower(.55);
+
+                rightArm.setPower(.3);
+                leftArm.setPower(-.3);
+
+                if(runtime.seconds()>2.5 || leftArm.getCurrentPosition()>-600){
                     leftArm.setPower(0);
                     rightArm.setPower(0);
                     runtime.reset();
@@ -216,6 +230,21 @@ arm = leftArm.getCurrentPosition()-1084;//695
                 telemetry.addData("xpos ", xPos);
                 telemetry.addData("amax ", alignXMax);
                 telemetry.addData("amin ", alignXMin);
+                if((xPos>0) && !targeted){
+
+                    if(xPos>alignX-70 && xPos<alignX+70){
+                        alignSize=140;
+                    }
+                    if(xPos<150){
+                        alignX=alignX-25;
+                    }
+                    if(xPos<(640-150)){
+                        alignX=alignX+25;
+                    }
+                    targeted=true;
+                  //  double alignXMin = alignX - (alignSize / 2); // Min X Pos in pixels
+                    //double alignXMax = alignX +(alignSize / 2); // Max X pos in pixels
+                }
                 if(!(xPos>0)){
                     if(runtime.seconds()<4) {
                         rightWheel1.setPower(0);
@@ -306,19 +335,31 @@ arm = leftArm.getCurrentPosition()-1084;//695
 
             }
             else if (step==3){
-                if(rightWheel1.getCurrentPosition()<1500) {
-                    leftWheel2.setPower(.6);
-                    leftWheel1.setPower(.6);
-                    rightWheel2.setPower(.6);
-                    rightWheel1.setPower(.6);
+                if(rightWheel1.getCurrentPosition()<1550) {
+                    leftWheel2.setPower(.4);
+                    leftWheel1.setPower(.4);
+                    rightWheel2.setPower(.4);
+                    rightWheel1.setPower(.4);
                 }
                 else {
                     rightWheel1.setPower(0);
                     rightWheel2.setPower(0);
                     leftWheel1.setPower(0);
                     leftWheel2.setPower(0);
+                    step=4;
                 }
                 //stage = 2;
+            }
+            else if(step==4){
+
+                if(armExtendLeft.getCurrentPosition()<800){
+                    armExtendLeft.setPower(-.4);
+                    armExtendRight.setPower(.4);
+                }
+                else{
+                    armExtendLeft.setPower(0);
+                    armExtendRight.setPower(0);
+                }
             }
 
     /*
@@ -499,6 +540,5 @@ arm = leftArm.getCurrentPosition()-1084;//695
                 subStep += 0.5;
             }
         }
-        //step = 4;
     }
 }

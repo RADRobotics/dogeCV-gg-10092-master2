@@ -34,6 +34,8 @@ public class CompetitionRobotTeleOp extends OpMode {
     private double nitro2;
     private double nitro3;
 
+    boolean cos = true;
+    boolean press = false;
     private Servo rightLock;
     private Servo leftLock;
     private Servo intake;
@@ -183,16 +185,29 @@ public class CompetitionRobotTeleOp extends OpMode {
 
                 telemetry.addData("theta", theta);
                 telemetry.addData("cos:", Math.cos(theta));
-                leftArm.setPower(Math.cos(theta) * .08);
-                rightArm.setPower(-Math.cos(theta) * .08);
+                leftArm.setPower(Math.cos(theta) * (.05+ .03*(armExtendLeft.getCurrentPosition()/1024)));
+                rightArm.setPower(-Math.cos(theta) * (.05+ .03*(armExtendLeft.getCurrentPosition()/1024)));
 
             }
             leftLock.setPosition(0.37);
             rightLock.setPosition(.32);
 
         }
-
-
+if(gamepad2.start){
+            leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            armExtendRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            armExtendLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+}
+if(gamepad2.y && !press){
+            cos=!cos;
+            press=true;
+}
+else{
+            press=false;
+}
         telemetry.addLine()
                 .addData("IsLocked", isLocked)
                 .addData("leftArmEncoder: ", leftArm.getCurrentPosition())
