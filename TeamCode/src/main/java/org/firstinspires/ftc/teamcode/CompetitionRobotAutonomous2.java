@@ -141,7 +141,7 @@ telemetry.addData("arm::::::",arm);
 telemetry.addData("armExtend",armExtendLeft.getCurrentPosition());
 telemetry.addData("armExtend2",armExtendRight.getCurrentPosition());
 
-arm = leftArm.getCurrentPosition()-1600;//695
+arm = leftArm.getCurrentPosition()-1300;//695
             if(step==-1){
                 leftLock.setPosition(0.37);
                 rightLock.setPosition(.32);
@@ -149,7 +149,7 @@ arm = leftArm.getCurrentPosition()-1600;//695
                     rightArm.setPower(.5);
                     leftArm.setPower(-.5);
 
-                if(runtime.seconds()>2 || arm >-1300){
+                if(runtime.seconds()>2 || arm >-1100){
                     step=0;
                     runtime.reset();
                 }
@@ -201,10 +201,10 @@ arm = leftArm.getCurrentPosition()-1600;//695
                 //leftArm.setPower(-.55);
                  //rightArm.setPower(.55);
 
-                rightArm.setPower(.3);
-                leftArm.setPower(-.3);
+                rightArm.setPower(.2);
+                leftArm.setPower(-.2);
 
-                if(runtime.seconds()>2.5 || leftArm.getCurrentPosition()>-600){
+                if(runtime.seconds()>2.5 || leftArm.getCurrentPosition()>-1000){
                     leftArm.setPower(0);
                     rightArm.setPower(0);
                     runtime.reset();
@@ -352,9 +352,9 @@ arm = leftArm.getCurrentPosition()-1600;//695
             }
             else if(step==4){
 
-                if(armExtendLeft.getCurrentPosition()<800){
-                    armExtendLeft.setPower(-.4);
-                    armExtendRight.setPower(.4);
+                if(armExtendLeft.getCurrentPosition()<400){
+                    armExtendLeft.setPower(-.3);
+                    armExtendRight.setPower(.3);
                 }
                 else{
                     armExtendLeft.setPower(0);

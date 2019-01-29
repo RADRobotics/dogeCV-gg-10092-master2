@@ -34,7 +34,7 @@ public class CompetitionRobotTeleOp extends OpMode {
     private double nitro2;
     private double nitro3;
 
-    boolean cos = true;
+    boolean cos = false;
     boolean press = false;
     private Servo rightLock;
     private Servo leftLock;
@@ -81,20 +81,20 @@ public class CompetitionRobotTeleOp extends OpMode {
 //        rightWheelFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        rightWheelBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //
-        armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //
 //        leftWheelFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        leftWheelBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        rightWheelFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        rightWheelBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //
-        armExtendLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armExtendRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armExtendLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtendRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
     }
@@ -176,11 +176,11 @@ public class CompetitionRobotTeleOp extends OpMode {
 
 
         } else if (!armPIDActive) {
-            if (Math.abs(gamepad2.left_stick_y) > .02 || gamepad2.y) {
+            if (Math.abs(gamepad2.left_stick_y) > .02 || !cos) {
                 rightArm.setPower(.5 * -gamepad2.left_stick_y * nitro2 * (1 - (gamepad2.left_trigger * .8)));
                 leftArm.setPower(.5 * gamepad2.left_stick_y * nitro2 * (1 - (gamepad2.left_trigger * .8)));
             } else {
-                theta = ((double) leftArm.getCurrentPosition()) / (-6800.0);
+                theta = (((double) leftArm.getCurrentPosition())-1600) / (-6800.0);
                 theta = theta * 3.14159;
 
                 telemetry.addData("theta", theta);
@@ -201,12 +201,18 @@ if(gamepad2.start){
             armExtendRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             armExtendLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 }
+telemetry.addData("cos",cos);
+
 if(gamepad2.y && !press){
             cos=!cos;
-            press=true;
+
+}
+
+if(gamepad2.y){
+    press=true;
 }
 else{
-            press=false;
+    press=false;
 }
         telemetry.addLine()
                 .addData("IsLocked", isLocked)
@@ -247,7 +253,7 @@ else{
             double armKp = 0.002;
             double armExtendKp = 0.002;
 
-            int armError = leftArm.getCurrentPosition() - armSetPoint;
+            int armError = (leftArm.getCurrentPosition()-1300) - armSetPoint;
             int armExtendError = armExtendLeft.getCurrentPosition() - armExtendSetPoint;
 
             double armPower = (double) armError * armKp;

@@ -51,7 +51,7 @@ import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-
+import org.firstinspires.ftc.teamcode.utils.gyroCompass;
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -72,6 +72,7 @@ public class soundTest extends OpMode
 {
     // Declare OpMode members.
 
+    gyroCompass gyro = new gyroCompass(hardwareMap);
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime runtime2 = new ElapsedTime();
     private DcMotor rw = null;
@@ -98,7 +99,7 @@ public class soundTest extends OpMode
         lw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
-        beepID = mySound.load(hardwareMap.appContext, R.raw.boop,1);
+        beepID = mySound.load(hardwareMap.appContext, R.raw.,1);
 
         telemetry.addData("Status", "Initialized");
 
