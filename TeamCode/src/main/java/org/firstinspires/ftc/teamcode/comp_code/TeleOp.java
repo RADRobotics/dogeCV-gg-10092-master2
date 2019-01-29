@@ -9,30 +9,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.R;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "CompetitionRobotTeleOp", group = "Competition")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "Competition")
 
 public class TeleOp extends OpMode {
     private DcMotor leftWheelFront;
-    //front top left wheel
     private DcMotor leftWheelBack;
-    //back bottom left wheel
     private DcMotor rightWheelFront;
-    //front top right wheel
     private DcMotor rightWheelBack;
-    //back bottom right wheel
+
     private DcMotor rightArm;
     private DcMotor leftArm;
     private DcMotor armExtendRight;
-    //arm extend right
     private DcMotor armExtendLeft;
-    //arm extend left
-    private int armExtendRightEncoder;
-    private int armExtendLeftEncoder;
-    private int leftArmEncoder;
-    private int rightArmEncoder;
+
     private double nitro1;
     private double nitro2;
-    private double nitro3;
 
     boolean cos = false;
     boolean press = false;
@@ -40,8 +31,6 @@ public class TeleOp extends OpMode {
     private Servo leftLock;
     private Servo intake;
     private Servo intake2;
-
-    private double setpoint = 0;
 
     private boolean isLocked = false;
 
@@ -54,6 +43,7 @@ public class TeleOp extends OpMode {
     public int beepID;
     int streamID;
     boolean play = false;
+
     @Override
     public void init() {
         mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
@@ -62,12 +52,13 @@ public class TeleOp extends OpMode {
         rightWheelFront = hardwareMap.dcMotor.get("rightWheel");
         leftWheelFront = hardwareMap.dcMotor.get("leftWheel");
         leftWheelBack = hardwareMap.dcMotor.get("leftWheel2");
-
         rightWheelBack = hardwareMap.dcMotor.get("rightWheel2");
+
         rightArm = hardwareMap.dcMotor.get("rightArm");
         leftArm = hardwareMap.dcMotor.get("leftArm");
         armExtendRight = hardwareMap.dcMotor.get("armExtend");
         armExtendLeft = hardwareMap.dcMotor.get("armExtend2");
+
         rightLock = hardwareMap.servo.get("rightLock");
         leftLock = hardwareMap.servo.get("leftLock");
         intake = hardwareMap.servo.get("intake");
@@ -76,21 +67,6 @@ public class TeleOp extends OpMode {
         rightLock.setPosition(.6);
         leftLock.setPosition(.4);
 
-//        leftWheelFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        leftWheelBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        rightWheelFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        rightWheelBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-       // armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//        leftWheelFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftWheelBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightWheelFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightWheelBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
         armExtendLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armExtendRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -101,6 +77,8 @@ public class TeleOp extends OpMode {
 
     @Override
     public void loop() {
+
+        //mario sounds nitro!!!
         if((gamepad1.right_trigger>.1 || gamepad2.right_trigger>.1) && play==false){
            streamID= mySound.play(beepID,1,1,1,-1,1);
             play = true;
@@ -114,11 +92,9 @@ public class TeleOp extends OpMode {
         }
         nitro1 = 1 - (gamepad1.right_trigger * .4);
         nitro2 = 1 + (gamepad2.right_trigger);
-        nitro3 = 1 - (gamepad2.left_trigger * .8);
 
 
         //drive motors
-
             rightWheelFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x) * nitro1);
             rightWheelBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x) * nitro1);
             leftWheelBack.setPower((gamepad1.left_stick_y + gamepad1.right_stick_x) * nitro1);
@@ -129,17 +105,8 @@ public class TeleOp extends OpMode {
             armExtendRight.setPower(.5 * (-gamepad2.right_stick_y) * nitro2 * (1 - (gamepad2.left_trigger * .8)));
             armExtendLeft.setPower(.5 * (gamepad2.right_stick_y) * nitro2 * (1 - (gamepad2.left_trigger * .8)));
         }
-        //arm motors/lock servos
-//        setpoint = /*rightArm.getCurrentPosition()+*/ gamepad2.left_stick_y*125*(nitro2);
 
-        if (gamepad2.x) {
-            isLocked = true;
-        }
-        if (gamepad2.a) {
-            isLocked = false;
-        }
-
-
+        //intake
         if (gamepad2.left_bumper) {
             if (gamepad2.b) {
                 intake.setPosition(0.25);
@@ -162,6 +129,13 @@ public class TeleOp extends OpMode {
             intake2.setPosition(0);
         }
 
+        //ratchet stuff/arm
+        if (gamepad2.x) {
+            isLocked = true;
+        }
+        if (gamepad2.a) {
+            isLocked = false;
+        }
         if (isLocked) {
             if (gamepad2.left_stick_y < 0) {
                 rightArm.setPower(.5 * -gamepad2.left_stick_y * nitro2 * (1 - (gamepad2.left_trigger * .8)));
@@ -175,7 +149,8 @@ public class TeleOp extends OpMode {
             rightLock.setPosition(.4);
 
 
-        } else if (!armPIDActive) {
+        }
+        else if (!armPIDActive) {
             if (Math.abs(gamepad2.left_stick_y) > .02 || !cos) {
                 rightArm.setPower(.5 * -gamepad2.left_stick_y * nitro2 * (1 - (gamepad2.left_trigger * .8)));
                 leftArm.setPower(.5 * gamepad2.left_stick_y * nitro2 * (1 - (gamepad2.left_trigger * .8)));
@@ -193,6 +168,8 @@ public class TeleOp extends OpMode {
             rightLock.setPosition(.32);
 
         }
+
+        //reset encoders
 if(gamepad2.start){
             leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -205,7 +182,6 @@ telemetry.addData("cos",cos);
 
 if(gamepad2.y && !press){
             cos=!cos;
-
 }
 
 if(gamepad2.y){
@@ -214,6 +190,7 @@ if(gamepad2.y){
 else{
     press=false;
 }
+
         telemetry.addLine()
                 .addData("IsLocked", isLocked)
                 .addData("leftArmEncoder: ", leftArm.getCurrentPosition())
@@ -222,6 +199,7 @@ else{
                 .addData("armExtendLeftEncoder: ", armExtendLeft.getCurrentPosition());
         telemetry.update();
 
+        //setpoints
         if (gamepad2.dpad_up) {
             armSetPoint = -2600;
             if (leftArm.getCurrentPosition() < armSetPoint + 500 && leftArm.getCurrentPosition() > armSetPoint - 500) {

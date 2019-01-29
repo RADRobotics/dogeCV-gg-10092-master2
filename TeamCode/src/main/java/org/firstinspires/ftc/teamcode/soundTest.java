@@ -71,12 +71,14 @@ import org.firstinspires.ftc.teamcode.utils.gyroCompass;
 public class soundTest extends OpMode
 {
     // Declare OpMode members.
-
-    gyroCompass gyro = new gyroCompass(hardwareMap);
+int intake=0;
+    gyroCompass gyro;
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime runtime2 = new ElapsedTime();
     private DcMotor rw = null;
     private DcMotor lw = null;
+    DcMotor arm = null;
+    DcMotor armExtend;
     public SoundPool mySound;
     public int beepID;
     ArrayList<String> list = new ArrayList<String>();
@@ -88,6 +90,14 @@ public class soundTest extends OpMode
      */
     @Override
     public void init() {
+        armExtend = hardwareMap.dcMotor.get("armExtend2");
+
+        arm = hardwareMap.dcMotor.get("leftArm");
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        gyro = new gyroCompass(hardwareMap);
 
         rw = hardwareMap.dcMotor.get("rightWheel");
         lw = hardwareMap.dcMotor.get("leftWheel");
@@ -99,7 +109,7 @@ public class soundTest extends OpMode
         lw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
-        beepID = mySound.load(hardwareMap.appContext, R.raw.,1);
+        beepID = mySound.load(hardwareMap.appContext, R.raw.mission_nightwing,1);
 
         telemetry.addData("Status", "Initialized");
 
@@ -130,7 +140,7 @@ public class soundTest extends OpMode
      */
 
     public void start() {
-            mySound.play(beepID,1,1,1,0,1);
+            mySound.play(beepID,1,1,1,1,1);
             runtime.reset();
             runtime2.reset();
     }
@@ -143,7 +153,13 @@ public class soundTest extends OpMode
         if(runtime.seconds()>.025){
             //list.add(runtime2.seconds() + " " + rw.getCurrentPosition() + " " + lw.getCurrentPosition());
             //thing += "s:"+runtime2.seconds() + " r:" + rw.getCurrentPosition() + " l:" + lw.getCurrentPosition() + "; ";
-            thing += "{"+rw.getCurrentPosition()+","+lw.getCurrentPosition()+"},";
+            if(gamepad2.right_bumper){
+                intake=1;
+            }
+            else{
+                intake=0;
+            }
+            thing += "{"+rw.getCurrentPosition()+","+lw.getCurrentPosition()+","+ (int)(gyro.getHeading()*1000)+","+arm.getCurrentPosition()+","+armExtend.getCurrentPosition()+","+intake +"},";
             telemetry.addData("sent", "");
             runtime.reset();
         }
