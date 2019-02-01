@@ -57,7 +57,7 @@ public class CompetitionRobotTeleOp extends OpMode {
     @Override
     public void init() {
         mySound= new SoundPool(1,AudioManager.STREAM_MUSIC,0);
-        beepID = mySound.load(hardwareMap.appContext, R.raw.mario,1);
+        //beepID = mySound.load(hardwareMap.appContext, R.raw.mario,1);
 
         rightWheelFront = hardwareMap.dcMotor.get("rightWheel");
         leftWheelFront = hardwareMap.dcMotor.get("leftWheel");

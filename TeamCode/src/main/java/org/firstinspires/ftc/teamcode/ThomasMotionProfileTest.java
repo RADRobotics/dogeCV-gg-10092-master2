@@ -40,17 +40,17 @@ public class ThomasMotionProfileTest extends OpMode {
 
     @Override
     public void loop() {
-        int setPoint = 300;
+        int setPoint = 0;
         double extendPower = 0;
 
         int error = setPoint - getArmExtendEncoder();
 
 
         if(gamepad1.a){
-            /*
-            double Kp = 0.01;
-            double Kd = 0.01;
-            double Ki = 0.00005;
+
+            double Kp = 0.005;
+            double Kd = 0.001;
+            double Ki = 0.0009;
 
             double currentExtendSpeed = (previousError-error)/(mRuntime.time()+0.000000001);
 
@@ -64,24 +64,34 @@ public class ThomasMotionProfileTest extends OpMode {
 
             //Storing previous error and summing error for the integral
             previousError = error;
-            sumError += error;
+
 
             //Integral saturatoin
-            if(sumError*Ki>0.5){
-                sumError = (int)(0.5/Ki);
+            if(error<50){
+                sumError += error;
+            }else{
+                sumError = 0;
             }
-            */
 
-            double speed = getMotoinProfileSpeed(5, 10, 300, (mRuntime.time()-moveStartTime));
+
+            /*double speed = getMotoinProfileSpeed(5, 10, 300, (mRuntime.time()-moveStartTime));
             double currentExtendSpeed = (previousError-error)/(mRuntime.time()+0.000000001);
 
             double speedError = speed - currentExtendSpeed;
 
             extendPower = (1.0/20.0)*speed + speedError*0.1;
+            */
+
             setArmExtendPower(extendPower);
 
-            telemetry.addData("set point speed",speed);
+            //telemetry.addData("set point speed",speed);
             telemetry.addData("Current speed",currentExtendSpeed);
+        }else if(gamepad1.b){
+            if(error>0){
+                setArmExtendPower(1);
+            }else{
+                setArmExtendPower(0);
+            }
         }else{
             moveStartTime = mRuntime.time();
             setArmExtendPower(0);
